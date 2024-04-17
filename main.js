@@ -1,5 +1,5 @@
 const path = require('node:path')
-const { app, BrowserWindow, ipcMain, dialog } = require('electron')
+const { app, BrowserWindow, ipcMain, dialog, Menu } = require('electron')
 
 const createWindow = () => {
     const win = new BrowserWindow({
@@ -9,6 +9,25 @@ const createWindow = () => {
         preload: path.join(__dirname, 'preload.js')
       }
     })
+
+    // 设置菜单
+    const menu = Menu.buildFromTemplate([
+      {
+        label: "通信测试",
+        submenu: [
+          {
+            click: () => win.webContents.send('update-counter', 1),
+            label: '发送+1'
+          },
+          {
+            click: () => win.webContents.send('update-counter', -1),
+            label: '发送-1'
+          }
+        ]
+      }
+    ])
+    Menu.setApplicationMenu(menu)
+
     // 注册事件处理器
     ipcMain.on('set-title', handelSetTitle)
     // 注册模块处理器
